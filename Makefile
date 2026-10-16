@@ -32,3 +32,9 @@ alu-fast-test: alu-fast-rtl
 	./tools/dev bash -e -c 'python3 tests/alu_vectors.py; iverilog -g2012 -DALU_DUT=Rv32AluFast -s alu_tb -o build/alu-fast-test.vvp build/rtl/Rv32AluFast.sv tests/alu_tb.sv; vvp build/alu-fast-test.vvp'
 alu-fast-gds: alu-fast-test
 	./tools/librelane librelane/alu-fast/config.json
+
+.PHONY: tt-rtl tt-test
+tt-rtl:
+	./tools/dev ./tools/sbt 'runMain GenerateTinyTapeout'
+tt-test:
+	./tools/dev bash -e -c '$(MAKE) -C test PATH="$$PWD/.venv-tt/bin:$$PATH"; .venv-tt/bin/python -m cocotb_tools.check_results test/results.xml'

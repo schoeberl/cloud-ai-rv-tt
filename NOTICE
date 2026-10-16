@@ -1,0 +1,7 @@
+Tiny Tapeout workflow and cocotb scaffolding is adapted from
+https://github.com/TinyTapeout/ttsky-verilog-template (SKY26d template).
+Those files have been modified for this project's sources and tests.
+The upstream scaffolding is licensed under Apache-2.0; see
+licenses/TinyTapeout-template-Apache-2.0.txt.
+Original project sources use the BSD-2-Clause license in LICENSE,
+unless otherwise stated.

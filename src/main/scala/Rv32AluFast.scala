@@ -75,3 +75,13 @@ object GenerateAluFast extends App {
   Files.createDirectories(Paths.get("build/rtl"))
   Files.writeString(Paths.get("build/rtl/Rv32AluFast.sv"), rtl)
 }
+
+/** Checked-in RTL for Tiny Tapeout; regenerated and compared in CI. */
+object GenerateTinyTapeout extends App {
+  val rtl = ChiselStage.emitSystemVerilog(new Rv32AluFast,
+    firtoolOpts = Array("-disable-all-randomization", "-strip-debug-info",
+      "--default-layer-specialization=disable",
+      "--lowering-options=disallowLocalVariables,disallowPackedArrays"))
+  Files.writeString(Paths.get("src/Rv32AluFast.sv"),
+    "// Generated from src/main/scala/Rv32AluFast.scala; do not edit.\n" + rtl)
+}

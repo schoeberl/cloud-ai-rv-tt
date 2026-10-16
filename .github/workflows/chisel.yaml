@@ -1,0 +1,19 @@
+name: Chisel RTL consistency
+on: [push, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  regenerate:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Download pinned sbt launcher
+        run: curl -fL https://repo.maven.apache.org/maven2/org/scala-sbt/sbt-launch/1.10.7/sbt-launch-1.10.7.jar -o tools/sbt-launch.jar
+      - name: Regenerate submitted RTL
+        run: ./tools/sbt 'runMain GenerateTinyTapeout'
+      - name: Check generated RTL matches source
+        run: git diff --exit-code -- src/Rv32AluFast.sv

@@ -6,7 +6,28 @@ GitHub write-access smoke test completed from the cloud development environment.
 
 A Chisel and LibreLane hardware development project using Nix, with an 8-bit counter and two registered 32-bit RISC-V ALU implementations. The ALUs explore timing and implementation tradeoffs in the open SKY130 high-density standard-cell library.
 
-This is an ALU benchmark, not a complete RISC-V processor or a Tiny Tapeout submission.
+This repository now includes a Tiny Tapeout SKY26d submission candidate around the revised ALU. It is not a complete RISC-V processor.
+
+## Tiny Tapeout submission candidate
+
+- Project: **Chisel RV32I ALU** by Martin Schoeberl
+- Top module: `tt_um_schoeberl_rv32alu`
+- Target: SKY26d / SKY130, **2x2 tiles**, **10 MHz**
+- [Pin protocol and datasheet](docs/info.md)
+- [Project metadata](info.yaml)
+- [GDS workflow](https://github.com/schoeberl/cloude-ai-rv-tt/actions/workflows/gds.yaml)
+- [RTL tests](https://github.com/schoeberl/cloude-ai-rv-tt/actions/workflows/test.yaml)
+
+The Tiny Tapeout wrapper serializes the 32-bit operands/results into a byte-wide host interface and preserves every ALU operation. Submitted generated RTL is checked into `src/Rv32AluFast.sv`; a separate workflow regenerates it from Chisel and checks for drift. `src/config.json` follows the current SKY26d template with a conservative 100 ns clock period.
+
+**Submission status:** repository preparation in progress. The new wrapper must pass the shuttle GDS build, gate-level tests and precheck before it is ready for acceptance. Website registration, shuttle reservation and any payment are separate steps; none has been completed yet. Existing standalone ALU benchmark results below are not Tiny Tapeout signoff results.
+
+```sh
+make tt-rtl     # Regenerate submitted core RTL
+make tt-test    # Pin-level tests; see test/README.md for Python setup
+```
+
+Register the repository through [Tiny Tapeout's project form](https://app.tinytapeout.com/projects/create) after checking the workflow results. Use the repository URL `https://github.com/schoeberl/cloude-ai-rv-tt` and the SKY26d shuttle.
 
 ## Quick start
 
