@@ -1,0 +1,6 @@
+{
+ "DESIGN_NAME": "Counter", "VERILOG_FILES": ["dir::../build/rtl/Counter.sv"],
+ "CLOCK_PORT": "clock", "CLOCK_PERIOD": 20,
+ "FP_SIZING": "absolute", "DIE_AREA": [0,0,100,100],
+ "PL_TARGET_DENSITY_PCT": 35, "PDK": "sky130A"
+}

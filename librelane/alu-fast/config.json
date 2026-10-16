@@ -1,0 +1,12 @@
+{
+  "DESIGN_NAME": "Rv32AluFast",
+  "VERILOG_FILES": ["dir::../../build/rtl/Rv32AluFast.sv"],
+  "CLOCK_PORT": "clock",
+  "CLOCK_PERIOD": 20,
+  "PNR_SDC_FILE": "dir::../alu/constraints.sdc",
+  "SIGNOFF_SDC_FILE": "dir::../alu/constraints.sdc",
+  "FP_SIZING": "absolute",
+  "DIE_AREA": [0, 0, 250, 250],
+  "PL_TARGET_DENSITY_PCT": 40,
+  "PDK": "sky130A"
+}

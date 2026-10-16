@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")/.."
+if [[ $# -eq 0 ]]; then
+ exec ./tools/nix develop "path:$PWD/nix"
+else
+ exec ./tools/nix develop "path:$PWD/nix" -c "$@"
+fi

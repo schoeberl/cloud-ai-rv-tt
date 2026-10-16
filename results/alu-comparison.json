@@ -1,0 +1,308 @@
+{
+  "baseline": {
+    "worst_corner": {
+      "corner": "max_ss_100C_1v60",
+      "period_ns": 20.0,
+      "reg_setup_slack_ns": 8.415893,
+      "estimated_min_period_ns": 11.584107,
+      "estimated_fmax_mhz": 86.32516947573085,
+      "reg_hold_slack_ns": 1.079521,
+      "critical_path": {
+        "startpoint": "_1848_ (rising edge-triggered flip-flop clocked by core_clk)",
+        "endpoint": "_1884_ (rising edge-triggered flip-flop clocked by core_clk)",
+        "slack_ns": 8.415893
+      },
+      "report": "librelane/alu/runs/alu-20ns/55-openroad-stapostpnr/max_ss_100C_1v60/max.rpt"
+    },
+    "corners": [
+      {
+        "corner": "max_ff_n40C_1v95",
+        "period_ns": 20.0,
+        "reg_setup_slack_ns": 16.248991,
+        "estimated_min_period_ns": 3.751009,
+        "estimated_fmax_mhz": 266.5949348561947,
+        "reg_hold_slack_ns": 0.171108,
+        "critical_path": {
+          "startpoint": "_1848_ (rising edge-triggered flip-flop clocked by core_clk)",
+          "endpoint": "_1884_ (rising edge-triggered flip-flop clocked by core_clk)",
+          "slack_ns": 16.248991
+        },
+        "report": "librelane/alu/runs/alu-20ns/55-openroad-stapostpnr/max_ff_n40C_1v95/max.rpt"
+      },
+      {
+        "corner": "max_ss_100C_1v60",
+        "period_ns": 20.0,
+        "reg_setup_slack_ns": 8.415893,
+        "estimated_min_period_ns": 11.584107,
+        "estimated_fmax_mhz": 86.32516947573085,
+        "reg_hold_slack_ns": 1.079521,
+        "critical_path": {
+          "startpoint": "_1848_ (rising edge-triggered flip-flop clocked by core_clk)",
+          "endpoint": "_1884_ (rising edge-triggered flip-flop clocked by core_clk)",
+          "slack_ns": 8.415893
+        },
+        "report": "librelane/alu/runs/alu-20ns/55-openroad-stapostpnr/max_ss_100C_1v60/max.rpt"
+      },
+      {
+        "corner": "max_tt_025C_1v80",
+        "period_ns": 20.0,
+        "reg_setup_slack_ns": 14.00675,
+        "estimated_min_period_ns": 5.99325,
+        "estimated_fmax_mhz": 166.85437784173862,
+        "reg_hold_slack_ns": 0.415446,
+        "critical_path": {
+          "startpoint": "_1848_ (rising edge-triggered flip-flop clocked by core_clk)",
+          "endpoint": "_1884_ (rising edge-triggered flip-flop clocked by core_clk)",
+          "slack_ns": 14.00675
+        },
+        "report": "librelane/alu/runs/alu-20ns/55-openroad-stapostpnr/max_tt_025C_1v80/max.rpt"
+      },
+      {
+        "corner": "min_ff_n40C_1v95",
+        "period_ns": 20.0,
+        "reg_setup_slack_ns": 16.331419,
+        "estimated_min_period_ns": 3.6685809999999996,
+        "estimated_fmax_mhz": 272.5849585984336,
+        "reg_hold_slack_ns": 0.160708,
+        "critical_path": {
+          "startpoint": "_1848_ (rising edge-triggered flip-flop clocked by core_clk)",
+          "endpoint": "_1884_ (rising edge-triggered flip-flop clocked by core_clk)",
+          "slack_ns": 16.331419
+        },
+        "report": "librelane/alu/runs/alu-20ns/55-openroad-stapostpnr/min_ff_n40C_1v95/max.rpt"
+      },
+      {
+        "corner": "min_ss_100C_1v60",
+        "period_ns": 20.0,
+        "reg_setup_slack_ns": 8.673998,
+        "estimated_min_period_ns": 11.326002,
+        "estimated_fmax_mhz": 88.29240891887534,
+        "reg_hold_slack_ns": 1.046041,
+        "critical_path": {
+          "startpoint": "_1848_ (rising edge-triggered flip-flop clocked by core_clk)",
+          "endpoint": "_1884_ (rising edge-triggered flip-flop clocked by core_clk)",
+          "slack_ns": 8.673998
+        },
+        "report": "librelane/alu/runs/alu-20ns/55-openroad-stapostpnr/min_ss_100C_1v60/max.rpt"
+      },
+      {
+        "corner": "min_tt_025C_1v80",
+        "period_ns": 20.0,
+        "reg_setup_slack_ns": 14.138801,
+        "estimated_min_period_ns": 5.861198999999999,
+        "estimated_fmax_mhz": 170.61355534934066,
+        "reg_hold_slack_ns": 0.400035,
+        "critical_path": {
+          "startpoint": "_1848_ (rising edge-triggered flip-flop clocked by core_clk)",
+          "endpoint": "_1884_ (rising edge-triggered flip-flop clocked by core_clk)",
+          "slack_ns": 14.138801
+        },
+        "report": "librelane/alu/runs/alu-20ns/55-openroad-stapostpnr/min_tt_025C_1v80/max.rpt"
+      },
+      {
+        "corner": "nom_ff_n40C_1v95",
+        "period_ns": 20.0,
+        "reg_setup_slack_ns": 16.290157,
+        "estimated_min_period_ns": 3.7098429999999993,
+        "estimated_fmax_mhz": 269.55318594344834,
+        "reg_hold_slack_ns": 0.166592,
+        "critical_path": {
+          "startpoint": "_1848_ (rising edge-triggered flip-flop clocked by core_clk)",
+          "endpoint": "_1884_ (rising edge-triggered flip-flop clocked by core_clk)",
+          "slack_ns": 16.290157
+        },
+        "report": "librelane/alu/runs/alu-20ns/55-openroad-stapostpnr/nom_ff_n40C_1v95/max.rpt"
+      },
+      {
+        "corner": "nom_ss_100C_1v60",
+        "period_ns": 20.0,
+        "reg_setup_slack_ns": 8.544695,
+        "estimated_min_period_ns": 11.455305,
+        "estimated_fmax_mhz": 87.29579875874104,
+        "reg_hold_slack_ns": 1.066062,
+        "critical_path": {
+          "startpoint": "_1848_ (rising edge-triggered flip-flop clocked by core_clk)",
+          "endpoint": "_1884_ (rising edge-triggered flip-flop clocked by core_clk)",
+          "slack_ns": 8.544695
+        },
+        "report": "librelane/alu/runs/alu-20ns/55-openroad-stapostpnr/nom_ss_100C_1v60/max.rpt"
+      },
+      {
+        "corner": "nom_tt_025C_1v80",
+        "period_ns": 20.0,
+        "reg_setup_slack_ns": 14.074501,
+        "estimated_min_period_ns": 5.925499,
+        "estimated_fmax_mhz": 168.76215825873905,
+        "reg_hold_slack_ns": 0.408595,
+        "critical_path": {
+          "startpoint": "_1848_ (rising edge-triggered flip-flop clocked by core_clk)",
+          "endpoint": "_1884_ (rising edge-triggered flip-flop clocked by core_clk)",
+          "slack_ns": 14.074501
+        },
+        "report": "librelane/alu/runs/alu-20ns/55-openroad-stapostpnr/nom_tt_025C_1v80/max.rpt"
+      }
+    ],
+    "sequential_cells": 105,
+    "standard_cell_area_um2": 14218.6,
+    "drc_errors": {
+      "magic": 0,
+      "klayout": 0
+    },
+    "lvs_errors": 0,
+    "max_slew_violations": 118,
+    "max_capacitance_violations": 3
+  },
+  "predecoded": {
+    "worst_corner": {
+      "corner": "max_ss_100C_1v60",
+      "period_ns": 20.0,
+      "reg_setup_slack_ns": 10.742834,
+      "estimated_min_period_ns": 9.257166,
+      "estimated_fmax_mhz": 108.02442129697145,
+      "reg_hold_slack_ns": 0.963747,
+      "critical_path": {
+        "startpoint": "_1878_ (rising edge-triggered flip-flop clocked by core_clk)",
+        "endpoint": "_1889_ (rising edge-triggered flip-flop clocked by core_clk)",
+        "slack_ns": 10.742834
+      },
+      "report": "librelane/alu-fast/runs/alu-fast-20ns/55-openroad-stapostpnr/max_ss_100C_1v60/max.rpt"
+    },
+    "corners": [
+      {
+        "corner": "max_ff_n40C_1v95",
+        "period_ns": 20.0,
+        "reg_setup_slack_ns": 16.963623,
+        "estimated_min_period_ns": 3.0363770000000017,
+        "estimated_fmax_mhz": 329.33986787543165,
+        "reg_hold_slack_ns": 0.147886,
+        "critical_path": {
+          "startpoint": "_1877_ (rising edge-triggered flip-flop clocked by core_clk)",
+          "endpoint": "_1919_ (rising edge-triggered flip-flop clocked by core_clk)",
+          "slack_ns": 16.963623
+        },
+        "report": "librelane/alu-fast/runs/alu-fast-20ns/55-openroad-stapostpnr/max_ff_n40C_1v95/max.rpt"
+      },
+      {
+        "corner": "max_ss_100C_1v60",
+        "period_ns": 20.0,
+        "reg_setup_slack_ns": 10.742834,
+        "estimated_min_period_ns": 9.257166,
+        "estimated_fmax_mhz": 108.02442129697145,
+        "reg_hold_slack_ns": 0.963747,
+        "critical_path": {
+          "startpoint": "_1878_ (rising edge-triggered flip-flop clocked by core_clk)",
+          "endpoint": "_1889_ (rising edge-triggered flip-flop clocked by core_clk)",
+          "slack_ns": 10.742834
+        },
+        "report": "librelane/alu-fast/runs/alu-fast-20ns/55-openroad-stapostpnr/max_ss_100C_1v60/max.rpt"
+      },
+      {
+        "corner": "max_tt_025C_1v80",
+        "period_ns": 20.0,
+        "reg_setup_slack_ns": 15.314403,
+        "estimated_min_period_ns": 4.685597,
+        "estimated_fmax_mhz": 213.41997615245188,
+        "reg_hold_slack_ns": 0.367752,
+        "critical_path": {
+          "startpoint": "_1877_ (rising edge-triggered flip-flop clocked by core_clk)",
+          "endpoint": "_1919_ (rising edge-triggered flip-flop clocked by core_clk)",
+          "slack_ns": 15.314403
+        },
+        "report": "librelane/alu-fast/runs/alu-fast-20ns/55-openroad-stapostpnr/max_tt_025C_1v80/max.rpt"
+      },
+      {
+        "corner": "min_ff_n40C_1v95",
+        "period_ns": 20.0,
+        "reg_setup_slack_ns": 17.040377,
+        "estimated_min_period_ns": 2.9596230000000006,
+        "estimated_fmax_mhz": 337.88087198943913,
+        "reg_hold_slack_ns": 0.142232,
+        "critical_path": {
+          "startpoint": "_1877_ (rising edge-triggered flip-flop clocked by core_clk)",
+          "endpoint": "_1919_ (rising edge-triggered flip-flop clocked by core_clk)",
+          "slack_ns": 17.040377
+        },
+        "report": "librelane/alu-fast/runs/alu-fast-20ns/55-openroad-stapostpnr/min_ff_n40C_1v95/max.rpt"
+      },
+      {
+        "corner": "min_ss_100C_1v60",
+        "period_ns": 20.0,
+        "reg_setup_slack_ns": 10.930567,
+        "estimated_min_period_ns": 9.069433,
+        "estimated_fmax_mhz": 110.26047604078447,
+        "reg_hold_slack_ns": 0.934274,
+        "critical_path": {
+          "startpoint": "_1877_ (rising edge-triggered flip-flop clocked by core_clk)",
+          "endpoint": "_1919_ (rising edge-triggered flip-flop clocked by core_clk)",
+          "slack_ns": 10.930567
+        },
+        "report": "librelane/alu-fast/runs/alu-fast-20ns/55-openroad-stapostpnr/min_ss_100C_1v60/max.rpt"
+      },
+      {
+        "corner": "min_tt_025C_1v80",
+        "period_ns": 20.0,
+        "reg_setup_slack_ns": 15.418423,
+        "estimated_min_period_ns": 4.581576999999999,
+        "estimated_fmax_mhz": 218.26545750513418,
+        "reg_hold_slack_ns": 0.360266,
+        "critical_path": {
+          "startpoint": "_1877_ (rising edge-triggered flip-flop clocked by core_clk)",
+          "endpoint": "_1919_ (rising edge-triggered flip-flop clocked by core_clk)",
+          "slack_ns": 15.418423
+        },
+        "report": "librelane/alu-fast/runs/alu-fast-20ns/55-openroad-stapostpnr/min_tt_025C_1v80/max.rpt"
+      },
+      {
+        "corner": "nom_ff_n40C_1v95",
+        "period_ns": 20.0,
+        "reg_setup_slack_ns": 17.007833,
+        "estimated_min_period_ns": 2.9921669999999985,
+        "estimated_fmax_mhz": 334.2059450558744,
+        "reg_hold_slack_ns": 0.145,
+        "critical_path": {
+          "startpoint": "_1877_ (rising edge-triggered flip-flop clocked by core_clk)",
+          "endpoint": "_1919_ (rising edge-triggered flip-flop clocked by core_clk)",
+          "slack_ns": 17.007833
+        },
+        "report": "librelane/alu-fast/runs/alu-fast-20ns/55-openroad-stapostpnr/nom_ff_n40C_1v95/max.rpt"
+      },
+      {
+        "corner": "nom_ss_100C_1v60",
+        "period_ns": 20.0,
+        "reg_setup_slack_ns": 10.849967,
+        "estimated_min_period_ns": 9.150033,
+        "estimated_fmax_mhz": 109.28922332848417,
+        "reg_hold_slack_ns": 0.95167,
+        "critical_path": {
+          "startpoint": "_1877_ (rising edge-triggered flip-flop clocked by core_clk)",
+          "endpoint": "_1919_ (rising edge-triggered flip-flop clocked by core_clk)",
+          "slack_ns": 10.849967
+        },
+        "report": "librelane/alu-fast/runs/alu-fast-20ns/55-openroad-stapostpnr/nom_ss_100C_1v60/max.rpt"
+      },
+      {
+        "corner": "nom_tt_025C_1v80",
+        "period_ns": 20.0,
+        "reg_setup_slack_ns": 15.372089,
+        "estimated_min_period_ns": 4.627910999999999,
+        "estimated_fmax_mhz": 216.0802141614219,
+        "reg_hold_slack_ns": 0.363981,
+        "critical_path": {
+          "startpoint": "_1877_ (rising edge-triggered flip-flop clocked by core_clk)",
+          "endpoint": "_1919_ (rising edge-triggered flip-flop clocked by core_clk)",
+          "slack_ns": 15.372089
+        },
+        "report": "librelane/alu-fast/runs/alu-fast-20ns/55-openroad-stapostpnr/nom_tt_025C_1v80/max.rpt"
+      }
+    ],
+    "sequential_cells": 113,
+    "standard_cell_area_um2": 14059.7,
+    "drc_errors": {
+      "magic": 0,
+      "klayout": 0
+    },
+    "lvs_errors": 0,
+    "max_slew_violations": 66,
+    "max_capacitance_violations": 2
+  }
+}

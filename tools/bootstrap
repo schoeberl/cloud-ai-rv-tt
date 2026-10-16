@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")/.."
+mkdir -p tools build
+if ! command -v nix >/dev/null && [[ ! -x tools/nix-portable ]]; then
+ curl -fL https://github.com/DavHau/nix-portable/releases/download/v012/nix-portable-x86_64 -o tools/nix-portable
+ echo 'b409c55904c909ac3aeda3fb1253319f86a89ddd1ba31a5dec33d4a06414c72a  tools/nix-portable' | sha256sum -c -
+ chmod +x tools/nix-portable
+fi
+curl -fL https://repo.maven.apache.org/maven2/org/scala-sbt/sbt-launch/1.10.7/sbt-launch-1.10.7.jar -o tools/sbt-launch.jar
+./tools/dev bash -c 'librelane --version; ./tools/sbt "runMain Generate"'

@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")/.."
+export NIX_SSL_CERT_FILE="${NIX_SSL_CERT_FILE:-/etc/ssl/certs/ca-certificates.crt}"
+export NP_GIT="$(command -v git)"
+export NP_LOCATION="$PWD/.cache/nix-portable"
+if command -v nix >/dev/null 2>&1; then
+ nix_command=("$(command -v nix)")
+else
+ export NP_RUNTIME="${NP_RUNTIME:-bwrap}"
+ nix_command=(./tools/nix-portable nix)
+fi
+exec "${nix_command[@]}" --extra-experimental-features 'nix-command flakes' \
+ --extra-substituters https://nix-cache.fossi-foundation.org \
+ --extra-trusted-public-keys 'nix-cache.fossi-foundation.org:3+K59iFwXqKsL7BNu6Guy0v+uTlwsxYQxjspXzqLYQs=' "$@"

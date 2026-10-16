@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")/.."
+export COURSIER_CACHE="$PWD/.cache/coursier"
+# Java does not consume HTTPS_PROXY automatically.
+proxy_args=()
+if [[ -n "${HTTPS_PROXY:-}" ]]; then
+  proxy_hostport="${HTTPS_PROXY#*://}"
+  proxy_hostport="${proxy_hostport%/}"
+  proxy_args+=("-Dhttps.proxyHost=${proxy_hostport%:*}" "-Dhttps.proxyPort=${proxy_hostport##*:}")
+  proxy_args+=("-Dhttp.proxyHost=${proxy_hostport%:*}" "-Dhttp.proxyPort=${proxy_hostport##*:}")
+fi
+# Include the managed host's proxy CA when using a Nix JDK.
+if [[ -f /etc/ssl/certs/java/cacerts ]]; then
+  proxy_args+=("-Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts")
+fi
+exec java "${proxy_args[@]}" -XX:ActiveProcessorCount=4 -Xmx2G \
+ -Dsbt.global.base="$PWD/.cache/sbt" -Dsbt.boot.directory="$PWD/.cache/sbt/boot" \
+ -Dsbt.ivy.home="$PWD/.cache/ivy" -Duser.home="$PWD/.cache/home" \
+ -Dsbt.override.build.repos=true -Dsbt.repository.config="$PWD/tools/repositories" \
+ -jar tools/sbt-launch.jar "$@"

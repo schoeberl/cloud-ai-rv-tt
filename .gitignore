@@ -1,0 +1,20 @@
+.venv/
+.cache/
+target/
+project/target/
+build/
+pdks/
+runs/
+tools/*.jar
+tools/nix-portable
+result
+
+# Local credentials and editor state
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+__pycache__/
+.bsp/
+.metals/
