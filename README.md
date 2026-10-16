@@ -20,7 +20,7 @@ This repository now includes a Tiny Tapeout SKY26d submission candidate around t
 
 The Tiny Tapeout wrapper serializes the 32-bit operands/results into a byte-wide host interface and preserves every ALU operation. Submitted generated RTL is checked into `src/Rv32AluFast.sv`; a separate workflow regenerates it from Chisel and checks for drift. `src/config.json` follows the current SKY26d template with a conservative 100 ns clock period.
 
-**Submission status:** repository preparation in progress. The new wrapper must pass the shuttle GDS build, gate-level tests and precheck before it is ready for acceptance. Website registration, shuttle reservation and any payment are separate steps; none has been completed yet. Existing standalone ALU benchmark results below are not Tiny Tapeout signoff results.
+**Submission status:** files are committed; RTL simulation, Chisel RTL consistency, metadata-schema validation, and datasheet generation have passed. The shuttle GDS build, gate-level tests and precheck are still being verified. Website registration, shuttle reservation and any payment are separate steps; none has been completed yet. Existing standalone ALU benchmark results below are not Tiny Tapeout signoff results.
 
 ```sh
 make tt-rtl     # Regenerate submitted core RTL
@@ -115,3 +115,7 @@ Tool caches, PDKs, generated RTL, and physical runs are excluded from Git. Recre
 - SKY130 PDK revision `8afc8346a57fe1ab7934ba5a6056ea8b43078e71`
 
 `nix/flake.lock` pins LibreLane, nix-eda, Nixpkgs, and their Nix dependencies. The launchers configure the official FOSSi signed binary cache and preserve proxy/CA settings. For a standard Nix installation, `nix develop ./nix` also opens the shell after enabling flakes and configuring that cache. Managed containers may require expanded execution permissions for the Nix namespace runtime.
+
+### Optional layout viewer
+
+The GDS viewer is disabled by default so GitHub Pages setup cannot block the fabrication checks. To enable it, select **GitHub Actions** as the source in the repository's **Settings → Pages**, then add an Actions repository variable `ENABLE_LAYOUT_VIEWER=true`. The next GDS workflow can deploy the preview. This is independent of Tiny Tapeout website registration.

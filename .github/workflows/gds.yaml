@@ -38,6 +38,8 @@ jobs:
         uses: TinyTapeout/tt-gds-action/gl_test@ttsky26d
 
   viewer:
+    # Optional preview; fabrication checks do not require GitHub Pages.
+    if: vars.ENABLE_LAYOUT_VIEWER == 'true'
     needs: gds
     runs-on: ubuntu-24.04
     permissions:
