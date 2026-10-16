@@ -2,6 +2,8 @@
 
 An experiment with LLV, RV, and TT.
 
+GitHub write-access smoke test completed from the cloud development environment.
+
 A Chisel and LibreLane hardware development project using Nix, with an 8-bit counter and two registered 32-bit RISC-V ALU implementations. The ALUs explore timing and implementation tradeoffs in the open SKY130 high-density standard-cell library.
 
 This is an ALU benchmark, not a complete RISC-V processor or a Tiny Tapeout submission.
