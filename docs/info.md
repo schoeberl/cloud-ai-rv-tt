@@ -1,6 +1,6 @@
 ## How it works
 
-`cloude-ai-rv-tt` is a 32-bit RV32I processor written in Chisel. Its three-stage pipeline follows the organization of Wildcat ThreeCats:
+This is a 32-bit RV32I processor written in Chisel. Its three-stage pipeline follows the organization of Wildcat ThreeCats:
 
 1. **Fetch:** PC generation and variable-latency instruction requests, with a two-entry instruction queue.
 2. **Decode:** instruction decoding, register-file reads and memory address calculation, with forwarding from writeback.
