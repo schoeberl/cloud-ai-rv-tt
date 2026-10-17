@@ -1,6 +1,6 @@
 # Tiny Tapeout SKY26d submission metadata
 project:
-  title: "Wildcat-style RV32I CPU"
+  title: "cloude-ai-rv-tt"
   author: "Martin Schoeberl"
   discord: ""
   description: "Three-stage RV32I processor with host-served instruction and data memory"

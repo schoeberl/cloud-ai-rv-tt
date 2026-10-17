@@ -24,7 +24,7 @@ At reset PC=0. With one-cycle instruction responses, no data stalls and straight
 
 | Field | Value |
 |---|---|
-| Title | Wildcat-style RV32I CPU |
+| Title | cloude-ai-rv-tt |
 | Author | Martin Schoeberl |
 | Top module | `tt_um_schoeberl_rv32i` |
 | Shuttle | SKY26d / SKY130 |
