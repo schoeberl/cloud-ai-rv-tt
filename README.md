@@ -1,4 +1,4 @@
-# cloude-ai-rv-tt — three-stage RV32I processor
+# cloud-ai-rv-tt — three-stage RV32I processor
 
 A Chisel RV32I processor for Tiny Tapeout SKY26d, with a three-stage pipeline inspired by Martin Schoeberl's [Wildcat ThreeCats](https://github.com/schoeberl/wildcat/blob/3594f0d49b873bdc54116a4017cf3f97ecf4fd11/src/main/scala/wildcat/pipeline/ThreeCats.scala). This is an independent Chisel 7 implementation of the pipeline organization, rather than a vendored copy of Wildcat. The previous standalone ALU examples and tests have been removed; they remain in Git history.
 
@@ -32,7 +32,7 @@ At reset PC=0. With one-cycle instruction responses, no data stalls and straight
 | Operating clock target | 10 MHz |
 | Program/data memory | External host, via the byte protocol |
 
-[Pin protocol and datasheet](docs/info.md) · [Metadata](info.yaml) · [Builds and tests](https://github.com/schoeberl/cloude-ai-rv-tt/actions)
+[Pin protocol and datasheet](docs/info.md) · [Metadata](info.yaml) · [Builds and tests](https://github.com/schoeberl/cloud-ai-rv-tt/actions)
 
 **Submission status:** the processor replaces the previous ALU submission candidate. Processor RTL tests, Chisel consistency and datasheet generation pass. The first CPU physical run failed during diode insertion because the 4x2 floorplan was too crowded; a 6x2 physical run is required to validate the revised footprint. Check the linked Actions results for the current status. Previous ALU acceptance checks and Fmax estimates do not validate this CPU. Website registration remains postponed and has not been completed.
 
@@ -41,8 +41,8 @@ At reset PC=0. With one-cycle instruction responses, no data stalls and straight
 Requirements: x86-64 Linux, Git, curl, network access, and either Nix with flakes enabled or support for nix-portable's bubblewrap runtime. The bootstrap downloads pinned tools and requires several GB of disk space.
 
 ```sh
-git clone https://github.com/schoeberl/cloude-ai-rv-tt.git
-cd cloude-ai-rv-tt
+git clone https://github.com/schoeberl/cloud-ai-rv-tt.git
+cd cloud-ai-rv-tt
 ./tools/bootstrap
 python3 -m venv .venv-tt
 .venv-tt/bin/pip install -r test/requirements.txt
