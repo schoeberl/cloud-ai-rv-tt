@@ -16,4 +16,4 @@ jobs:
       - name: Regenerate submitted RTL
         run: ./tools/sbt 'runMain GenerateTinyTapeout'
       - name: Check generated RTL matches source
-        run: git diff --exit-code -- src/Rv32AluFast.sv
+        run: git diff --exit-code -- src/WildcatThreeStage.sv

@@ -23,7 +23,12 @@ jobs:
         shell: bash
         run: pip install -r test/requirements.txt
 
-      - name: Run tests
+      - name: Run processor differential tests
+        run: |
+          make -C tests
+          python -m cocotb_tools.check_results tests/results.xml
+
+      - name: Run Tiny Tapeout pin tests
         run: |
           cd test
           make clean
@@ -34,7 +39,9 @@ jobs:
       - name: Test Summary
         uses: test-summary/action@v2.4
         with:
-          paths: "test/results.xml"
+          paths: |
+            test/results.xml
+            tests/results.xml
         if: always()
 
       - name: upload waveform and test results
@@ -45,4 +52,5 @@ jobs:
           path: |
             test/tb.fst
             test/results.xml
+            tests/results.xml
             test/output/*

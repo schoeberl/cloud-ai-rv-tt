@@ -8,4 +8,4 @@ if ! command -v nix >/dev/null && [[ ! -x tools/nix-portable ]]; then
  chmod +x tools/nix-portable
 fi
 curl -fL https://repo.maven.apache.org/maven2/org/scala-sbt/sbt-launch/1.10.7/sbt-launch-1.10.7.jar -o tools/sbt-launch.jar
-./tools/dev bash -c 'librelane --version; ./tools/sbt "runMain Generate"'
+./tools/dev bash -c 'librelane --version; ./tools/sbt "runMain GenerateTinyTapeout"'

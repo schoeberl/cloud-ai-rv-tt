@@ -1,121 +1,83 @@
-# cloude-ai-rv-tt
+# cloude-ai-rv-tt — three-stage RV32I processor
 
-An experiment with LLV, RV, and TT.
+A Chisel RV32I processor for Tiny Tapeout SKY26d, with a three-stage pipeline inspired by Martin Schoeberl's [Wildcat ThreeCats](https://github.com/schoeberl/wildcat/blob/3594f0d49b873bdc54116a4017cf3f97ecf4fd11/src/main/scala/wildcat/pipeline/ThreeCats.scala). This is an independent Chisel 7 implementation of the pipeline organization, rather than a vendored copy of Wildcat. The previous standalone ALU examples and tests have been removed; they remain in Git history.
 
-GitHub write-access smoke test completed from the cloud development environment.
+## Processor
 
-A Chisel and LibreLane hardware development project using Nix, with an 8-bit counter and two registered 32-bit RISC-V ALU implementations. The ALUs explore timing and implementation tradeoffs in the open SKY130 high-density standard-cell library.
-
-This repository now includes a Tiny Tapeout SKY26d submission candidate around the revised ALU. It is not a complete RISC-V processor.
-
-## Tiny Tapeout submission candidate
-
-- Project: **Chisel RV32I ALU** by Martin Schoeberl
-- Top module: `tt_um_schoeberl_rv32alu`
-- Target: SKY26d / SKY130, **2x2 tiles**, **10 MHz**
-- [Pin protocol and datasheet](docs/info.md)
-- [Project metadata](info.yaml)
-- [GDS workflow](https://github.com/schoeberl/cloude-ai-rv-tt/actions/workflows/gds.yaml)
-- [RTL tests](https://github.com/schoeberl/cloude-ai-rv-tt/actions/workflows/test.yaml)
-
-The Tiny Tapeout wrapper serializes the 32-bit operands/results into a byte-wide host interface and preserves every ALU operation. Submitted generated RTL is checked into `src/Rv32AluFast.sv`; a separate workflow regenerates it from Chisel and checks for drift. `src/config.json` follows the current SKY26d template with a conservative 100 ns clock period.
-
-**Submission status:** files are committed; RTL simulation, Chisel RTL consistency, metadata-schema validation, and datasheet generation have passed. The shuttle GDS build, gate-level tests and precheck are still being verified. Website registration, shuttle reservation and any payment are separate steps; none has been completed yet. Existing standalone ALU benchmark results below are not Tiny Tapeout signoff results.
-
-```sh
-make tt-rtl     # Regenerate submitted core RTL
-make tt-test    # Pin-level tests; see test/README.md for Python setup
+```text
+PC / instruction fetch -> decode / register read / address generation -> execute / memory / writeback
+     two-entry IF queue             writeback bypass                       variable-latency stalls
 ```
 
-Register the repository through [Tiny Tapeout's project form](https://app.tinytapeout.com/projects/create) after checking the workflow results. Use the repository URL `https://github.com/schoeberl/cloude-ai-rv-tt` and the SKY26d shuttle.
+- All RV32I integer instructions: arithmetic, logic, shifts, comparisons, LUI/AUIPC, JAL/JALR, all six branches, five loads, three stores, FENCE, ECALL and EBREAK.
+- Also implements FENCE.I (Zifencei) by flushing/refetching the instruction stream.
+- Full 32-register integer register file; x0 is hardwired to zero. Other registers are unspecified after reset and must be initialized by software.
+- Same-cycle writeback-to-decode forwarding, including load-use, store-address/data and branch dependencies.
+- In-order issue/retirement, branch/jump flushing and suppression of stale speculative fetch responses.
+- One outstanding request per Harvard memory port, with request backpressure and arbitrary response waits. The TT wrapper multiplexes them onto a host-served byte interface.
+- Aligned little-endian 32-bit instruction/data addresses and byte write strobes. Misaligned halfword/word accesses raise precise exceptions; byte accesses are unrestricted.
+- Exceptions halt the core and expose cause, PC and value to the host monitor. No privileged ISA, interrupt controller, CSR instructions, M/A/C/F/D extensions, on-chip program/data RAM, or operating-system environment is included. This is a processor core with a monitor execution environment, not a complete autonomous SoC.
 
-## Quick start
+At reset PC=0. With one-cycle instruction responses, no data stalls and straight-line code, the pipeline can retire one instruction per cycle. The TT byte protocol substantially limits delivered instruction bandwidth; the CPU stalls safely until the host supplies memory responses.
 
-Requirements: x86-64 Linux, Git, curl, and either Nix with flakes enabled or support for unprivileged user namespaces and bubblewrap. Allow several GB of disk space and network access for the EDA tools and SKY130 PDK.
+## Tiny Tapeout
+
+| Field | Value |
+|---|---|
+| Title | Wildcat-style RV32I CPU |
+| Author | Martin Schoeberl |
+| Top module | `tt_um_schoeberl_rv32i` |
+| Shuttle | SKY26d / SKY130 |
+| Declared footprint | 4x2 tiles (8 tiles), conservative pending physical validation |
+| Operating clock target | 10 MHz |
+| Program/data memory | External host, via the byte protocol |
+
+[Pin protocol and datasheet](docs/info.md) · [Metadata](info.yaml) · [Builds and tests](https://github.com/schoeberl/cloude-ai-rv-tt/actions)
+
+**Submission status:** the processor replaces the previous ALU submission candidate. New processor RTL tests pass locally; CPU GDS, gate-level tests and precheck require a fresh run. Previous ALU acceptance checks and Fmax estimates do not validate this CPU. Website registration remains postponed and has not been completed.
+
+## Build and test
+
+Requirements: x86-64 Linux, Git, curl, network access, and either Nix with flakes enabled or support for nix-portable's bubblewrap runtime. The bootstrap downloads pinned tools and requires several GB of disk space.
 
 ```sh
 git clone https://github.com/schoeberl/cloude-ai-rv-tt.git
 cd cloude-ai-rv-tt
 ./tools/bootstrap
-make alu-test
-make alu-fast-test
+python3 -m venv .venv-tt
+.venv-tt/bin/pip install -r test/requirements.txt
+make test
 ```
-
-`tools/bootstrap` uses an installed Nix or downloads a checksum-verified nix-portable v012. It also downloads the pinned sbt launcher. `./tools/dev` enters the development shell; the shell includes Java, LibreLane, Yosys, OpenROAD, Magic, KLayout, Icarus Verilog, and Verilator.
 
 ```sh
-./tools/dev          # Interactive Nix development shell
-make rtl             # Generate counter SystemVerilog
-make gds             # Run counter implementation
-make alu-gds         # Test and implement the baseline ALU
-make alu-fast-gds    # Test and implement the revised ALU
+./tools/dev     # Interactive Nix shell
+make rtl        # Regenerate src/WildcatThreeStage.sv from Chisel
+make core-test  # Differential execution, trace, pipeline and fault tests
+make tt-test    # Complete processor execution through public TT pins
 ```
 
-LibreLane automatically downloads its compatible SKY130 PDK on the first implementation run. Runs are saved beneath each design's `librelane/.../runs/` directory. Final GDS and other views are in the run's `final/` directory. GUI tools require a display setup.
+The checked-in generated RTL lets Tiny Tapeout build without installing Scala. CI regenerates it to detect drift, runs both processor test suites, generates the datasheet, and executes the SKY26d GDS, gate-level simulation and precheck workflows. The optional layout viewer is enabled with `ENABLE_LAYOUT_VIEWER=true` after configuring GitHub Pages.
 
-## ALU operations and pipeline
+The independent Python model checks retired PC/instruction, destination register/value, stores and exceptions. A 367-instruction program covers all base integer instruction groups, forwarding, taken/untaken/backward branches, byte lanes, self-modifying code with FENCE.I, and seeded random arithmetic/memory instructions. Core tests run it under three memory timing profiles; the fast profile reaches 193 consecutive one-per-cycle retirements. Separate fault programs check illegal encodings, alignment, bus errors, ECALL/EBREAK, load faults targeting x0, and suppression of speculative faults and younger stores. Pin-level tests also check host-request stability, disable handling and reset cancellation. These are functional regression tests, not a claim of official RISC-V architectural certification.
 
-Both ALUs implement ADD, SUB, SLL, SLT, SLTU, XOR, SRL, SRA, OR, and AND, plus COPY_B for LUI and addition with bit zero cleared for JALR. Registered equality, signed-less-than, and unsigned-less-than flags support branch comparisons. Register/immediate forms share the same datapath; instruction decoding, immediate formation, PC selection, memory, and the register file are external.
+## External memory host
 
-```text
-Operands + operation + valid
-            |
-      Input registers
-            |
-   Combinational 32-bit ALU
-            |
-      Output registers
-            |
-    Result + flags + valid
-```
+Use `ui_in` for response bytes, `uio_in` for commands, and `uo_out` for request/status readback. All bidirectional pins remain inputs. START releases the CPU from reset; the host then services each instruction or data request until the CPU traps. No fixed ROM limits the program, and all 32 address bits are transported. The host must provide the program/data memory and acknowledge stores exactly once.
 
-A request sampled at rising edge N appears at the outputs immediately after edge N+1. Both designs accept one request per cycle, with synchronous active-high reset and no stalls. The revised version registers decoded controls and uses parallel result selection while retaining all operations and the same latency.
+See [docs/info.md](docs/info.md) for the complete protocol and [software/](software/) for a small RV32I demonstration and host-service example.
 
-See the [ALU documentation](librelane/alu/README.md) for opcode values, constraints, critical paths, and reproduction commands.
+## Repository layout
 
-## Measured results
-
-Both ALUs passed 22,308 simulation cycles against an independent Python reference model and completed the LibreLane Classic physical flow with zero Magic/KLayout DRC, LVS, and antenna errors.
-
-| Register-to-register timing estimate | Baseline | Revised |
-|---|---:|---:|
-| Worst corner: slow cells, 1.60 V, 100 C, maximum RC | 86.3 MHz | 108.0 MHz |
-| Nominal corner: typical cells, 1.80 V, 25 C, nominal RC | 168.8 MHz | 216.1 MHz |
-| Worst-corner minimum period | 11.5841 ns | 9.2572 ns |
-| Sequential cells | 105 | 113 |
-
-The revised ALU improves worst-corner Fmax by about 25% without removing functionality. Extracted timing rechecks bracketed the baseline limit between 11.5 and 11.6 ns and the revised limit between 9.2 and 9.3 ns.
-
-Both layouts used a 20 ns implementation target on a 250 x 250 micrometer die, with 0.25 ns clock uncertainty, propagated post-CTS clocks, extracted parasitics, and fixed I/O budgets. The register-only estimates include setup time and clock skew. No additional OCV derate was applied, and synchronous reset was held inactive for normal-operation timing.
-
-**Slew and capacitance violations remain at slow corners.** These results are provisional performance estimates rather than complete electrical signoff or silicon measurements. Implementation at a tighter target may produce different results.
-
-The baseline critical path runs from opcode control through SUB decode, arithmetic carry logic, and result selection to result bit 31. The revised critical path moves to SLL control through the shared barrel shifter and result logic to result bit 0. Detailed measurements are retained in [results/alu-comparison.json](results/alu-comparison.json).
-
-## Project layout
-
-| Path | Contents |
+| Path | Purpose |
 |---|---|
-| `src/main/scala/` | Counter, baseline ALU, revised ALU, and RTL generators |
-| `tests/` | Independent Python reference vectors and SystemVerilog testbench |
-| `librelane/` | Physical implementation configurations and timing constraints |
-| `scripts/` | Timing report extraction and clock-period rechecks |
-| `nix/` | Development shell and locked Nix inputs |
-| `tools/` | Bootstrap, Nix, sbt, and LibreLane launchers |
-| `results/` | Small retained measurement summaries |
+| `src/main/scala/WildcatThreeStage.scala` | Processor and generated-RTL entry point |
+| `src/WildcatThreeStage.sv` | Submitted Chisel-generated core |
+| `src/tt_um_schoeberl_rv32i.v` | TT monitor and external-memory bridge |
+| `tests/` | Independent instruction model and core differential tests |
+| `test/` | TT pin-level RTL/gate-level tests |
+| `software/` | Demo program and generic memory-host service |
+| `info.yaml`, `docs/info.md` | Submission metadata and datasheet |
+| `src/config.json` | SKY26d physical configuration, 100 ns clock target |
+| `nix/`, `tools/` | Reproducible development environment and launchers |
 
-Tool caches, PDKs, generated RTL, and physical runs are excluded from Git. Recreate them using the commands above.
-
-## Pinned tools
-
-- LibreLane 3.0.16
-- Chisel 7.16.0 and Scala 2.13.18
-- sbt 1.10.7 and Java 21
-- Chisel-resolved CIRCT firtool 1.160.0
-- SKY130 PDK revision `8afc8346a57fe1ab7934ba5a6056ea8b43078e71`
-
-`nix/flake.lock` pins LibreLane, nix-eda, Nixpkgs, and their Nix dependencies. The launchers configure the official FOSSi signed binary cache and preserve proxy/CA settings. For a standard Nix installation, `nix develop ./nix` also opens the shell after enabling flakes and configuring that cache. Managed containers may require expanded execution permissions for the Nix namespace runtime.
-
-### Optional layout viewer
-
-The GDS viewer is disabled by default so GitHub Pages setup cannot block the fabrication checks. To enable it, select **GitHub Actions** as the source in the repository's **Settings → Pages**, then add an Actions repository variable `ENABLE_LAYOUT_VIEWER=true`. The next GDS workflow can deploy the preview. This is independent of Tiny Tapeout website registration.
+Tool versions: Chisel 7.16.0, Scala 2.13.18, sbt 1.10.7, Java 21, LibreLane 3.0.16 in the local Nix environment. The shuttle workflow uses the versions selected by `TinyTapeout/tt-gds-action@ttsky26d`. PDKs, downloaded tools and generated runs are excluded from Git. Original project code is BSD-2-Clause; adapted Tiny Tapeout scaffolding retains its Apache-2.0 notice.

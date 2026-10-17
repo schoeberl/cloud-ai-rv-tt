@@ -27,8 +27,8 @@ module tb ();
   wire VGND = 1'b0;
 `endif
 
-  // Replace tt_um_schoeberl_rv32alu with your module name:
-  tt_um_schoeberl_rv32alu user_project (
+  // Replace tt_um_schoeberl_rv32i with your module name:
+  tt_um_schoeberl_rv32i user_project (
 
       // Include power ports for the Gate Level test:
 `ifdef GL_TEST

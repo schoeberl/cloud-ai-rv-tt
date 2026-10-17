@@ -1,115 +1,103 @@
 # Copyright (c) 2026 Martin Schoeberl
 # SPDX-License-Identifier: BSD-2-Clause
-"""Pin-level tests shared by Tiny Tapeout RTL and gate-level workflows."""
+"""Tiny Tapeout pin-level processor test and external-memory host model."""
 import random
+import sys
+from pathlib import Path
 import cocotb
 from cocotb.triggers import Timer
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'tests'))
+from rv32 import Reference, Trap, program, trap_cases, demo_program
 
-MASK = 0xFFFFFFFF
+async def tick(d,cmd=0,data=0,index=0,enabled=True):
+    d.clk.value=0;d.ena.value=int(enabled);d.ui_in.value=data
+    d.uio_in.value=(index<<4)|cmd
+    await Timer(50,unit='ns');d.clk.value=1;await Timer(50,unit='ns')
+    assert int(d.uio_oe.value)==0 and int(d.uio_out.value)==0
+    if not enabled:assert int(d.uo_out.value)==0
+    return int(d.uo_out.value)
 
-def signed(value):
-    return value if value < 0x80000000 else value - 0x100000000
+async def read(d,cmd,index=0):
+    d.uio_in.value=(index<<4)|cmd
+    await Timer(10,unit='ns')
+    return int(d.uo_out.value)
 
-def model(a, b, op):
-    shift = b & 31
-    operations = {
-        0: lambda: a + b, 1: lambda: a - b, 2: lambda: a << shift,
-        3: lambda: int(signed(a) < signed(b)), 4: lambda: int(a < b),
-        5: lambda: a ^ b, 6: lambda: a >> shift, 7: lambda: signed(a) >> shift,
-        8: lambda: a | b, 9: lambda: a & b, 10: lambda: b,
-        11: lambda: (a + b) & ~1,
-    }
-    value = operations.get(op, lambda: 0)() & MASK
-    flags = int(a == b) | (int(signed(a) < signed(b)) << 1) | (int(a < b) << 2)
-    return value, flags
+async def read_word(d,first):
+    return sum([(await read(d,first+n))<<(8*n) for n in range(4)])
 
-async def cycle(dut, command=0, data=0, opcode=0, enabled=True):
-    dut.clk.value = 0
-    dut.ena.value = int(enabled)
-    dut.ui_in.value = data
-    dut.uio_in.value = (opcode << 4) | command
-    await Timer(50, unit="ns")
-    dut.clk.value = 1
-    await Timer(50, unit="ns")
-    assert int(dut.uio_oe.value) == 0, "Host control pins must never be driven"
-    assert int(dut.uio_out.value) == 0
-    return int(dut.uo_out.value)
+async def debug_word(d,cmd):
+    return sum([(await read(d,cmd,n))<<(8*n) for n in range(4)])
 
-async def reset(dut):
-    dut.rst_n.value = 0
-    for _ in range(3):
-        await cycle(dut)
-    dut.rst_n.value = 1
-    status = await cycle(dut)
-    assert status == 0x80
-
-async def read_result(dut):
-    result = 0
-    for index in range(4):
-        dut.uio_in.value = 0xA + index
-        await Timer(10, unit="ns")
-        result |= int(dut.uo_out.value) << (8 * index)
-    dut.uio_in.value = 0xE
-    await Timer(10, unit="ns")
-    return result, int(dut.uo_out.value)
-
-async def transaction(dut, a, b, op):
-    for index in range(4):
-        await cycle(dut, 1 + index, (a >> (8 * index)) & 255)
-        await cycle(dut, 5 + index, (b >> (8 * index)) & 255)
-    status = await cycle(dut, 9, opcode=op)
-    assert status & 0x18 == 0x08, "Execute must set busy and clear done"
-    status = await cycle(dut)
-    assert status & 0x18 == 0x08, "Result must not appear early"
-    status = await cycle(dut)
-    assert status & 0x18 == 0x10, "Result must complete two cycles after execute"
-    result, status = await read_result(dut)
-    expected, flags = model(a, b, op)
-    assert result == expected, f"op={op} A={a:08x} B={b:08x}: {result:08x} != {expected:08x}"
-    assert status == 0x90 | flags | (0x20 if op >= 12 else 0)
+async def reset(d):
+    d.rst_n.value=0
+    for _ in range(3):await tick(d)
+    d.rst_n.value=1
+    assert await tick(d)==0x40
 
 @cocotb.test()
-async def test_alu_protocol(dut):
-    await reset(dut)
-    boundary = [0, 1, 31, 32, 0x7FFFFFFF, 0x80000000, 0xFFFFFFFE, MASK]
-    cases = [(a, b) for a, b in zip(boundary, reversed(boundary))]
-    cases += [(0, 0), (MASK, MASK), (0x80000000, 0x80000000), (0x7FFFFFFF, 1)]
-    for op in range(16):
-        for a, b in cases:
-            await transaction(dut, a, b, op)
-    for op in [2, 6, 7]:
-        for shift in range(64):
-            await transaction(dut, 0x80000001, shift, op)
-    rng = random.Random(0x54545256)
-    for _ in range(256):
-        await transaction(dut, rng.getrandbits(32), rng.getrandbits(32), rng.randrange(16))
+async def processor_over_tt_pins(d):
+    for label,words,ifault,dfault in [('demo',demo_program(),(),()),('program',program(),(),()),*trap_cases()]:
+        memory=Reference(words,ifault,dfault)
+        expected_trap=None
+        reference=Reference(words,ifault,dfault)
+        retired=0
+        for _ in range(10000):
+            try:reference.step();retired+=1
+            except Trap as trap:
+                expected_trap=(trap.cause,trap.pc,trap.value)
+                break
+        assert expected_trap is not None, 'Reference program did not terminate'
+        await reset(d)
+        assert await tick(d,0xc,enabled=False)==0
+        assert await tick(d)==0x40, 'START ignored while unselected'
+        await tick(d,0xc)
+        rng=random.Random(33);requests=0
+        for _ in range(30000):
+            status=await read(d,0)
+            if status&0x10:
+                cause=(await read(d,9))>>4
+                pc=await debug_word(d,0xe);value=await debug_word(d,0xf)
+                assert (cause,pc,value)==expected_trap,(label,(cause,pc,value),expected_trap)
+                assert memory.stores==reference.stores,(label,'store stream mismatch')
+                for address in reference.memory:
+                    assert memory.memory.get(address,0)==reference.memory[address],(label,'memory mismatch',address)
+                d._log.info('%s: %d retired instructions in reference, %d host requests',label,retired,requests)
+                break
+            if not status&2:
+                await tick(d);continue
+            address=await read_word(d,1)
+            is_instruction=bool(status&8);is_write=bool(status&4)
+            assert address&3==0
+            if requests==0:
+                # Disabled ACK cannot consume a pending request.
+                await tick(d,0xb,enabled=False)
+                await tick(d)
+                assert await read(d,0)&2
+                assert await read_word(d,1)==address
+            for _ in range(rng.randrange(3)):
+                await tick(d)
+                assert await read_word(d,1)==address,'Request must remain stable until ACK'
+            error=address in (ifault if is_instruction else dfault)
+            if is_write:
+                assert not is_instruction
+                data=await read_word(d,5);mask=(await read(d,9))&15
+                if not error:
+                    memory.stores.append((address,data,mask))
+                    for byte in range(4):
+                        if mask&(1<<byte):memory.memory[address+byte]=(data>>(8*byte))&255
+            data=memory.word(address)
+            if not is_write:
+                for byte in range(4):await tick(d,0xa,(data>>(8*byte))&255,byte)
+            await tick(d,0xb,int(error))
+            await tick(d)
+            requests+=1
+        else:raise AssertionError((label,'host service timeout'))
+        assert await tick(d,0xd)==0x40,'RESET returns to monitor without START'
 
-    # Writes and EXEC are ignored while disabled; outputs are quiet.
-    await transaction(dut, 0x12345678, 9, 0)
-    assert await cycle(dut, 1, 255, enabled=False) == 0
-    assert await cycle(dut, 9, opcode=1, enabled=False) == 0
-    await cycle(dut, 9, opcode=0)
-    # An attempted operand write while busy must be ignored.
-    await cycle(dut, 1, 255)
-    await cycle(dut)
-    value, _ = await read_result(dut)
-    assert value == 0x12345681
-
-    # CLEAR cancels an in-flight request and clears operands/status/result.
-    await cycle(dut, 9, opcode=1)
-    assert await cycle(dut, 15) == 0x80
-    await cycle(dut)
-    await cycle(dut)
-    value, status = await read_result(dut)
-    assert value == 0 and status == 0x80
-    await cycle(dut, 9, opcode=0)
-    await cycle(dut)
-    await cycle(dut)
-    value, status = await read_result(dut)
-    assert value == 0 and status == 0x91
-    # External reset must also cancel an in-flight transaction.
-    await cycle(dut, 9, opcode=2)
-    await reset(dut)
-    await cycle(dut)
-    value, status = await read_result(dut)
-    assert value == 0 and status == 0x80
+    # Reset also cancels an outstanding instruction request, without ACK.
+    await tick(d,0xc)
+    for _ in range(10):
+        if await tick(d)&2:break
+    else:raise AssertionError('No initial fetch request')
+    assert await tick(d,0xd)==0x40
+    for _ in range(4):assert await tick(d)==0x40
