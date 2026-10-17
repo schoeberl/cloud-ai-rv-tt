@@ -28,13 +28,13 @@ At reset PC=0. With one-cycle instruction responses, no data stalls and straight
 | Author | Martin Schoeberl |
 | Top module | `tt_um_schoeberl_rv32i` |
 | Shuttle | SKY26d / SKY130 |
-| Declared footprint | 4x2 tiles (8 tiles), conservative pending physical validation |
+| Declared footprint | 6x2 tiles (12 tiles), increased after the 4x2 placement failure |
 | Operating clock target | 10 MHz |
 | Program/data memory | External host, via the byte protocol |
 
 [Pin protocol and datasheet](docs/info.md) · [Metadata](info.yaml) · [Builds and tests](https://github.com/schoeberl/cloude-ai-rv-tt/actions)
 
-**Submission status:** the processor replaces the previous ALU submission candidate. New processor RTL tests pass locally; CPU GDS, gate-level tests and precheck require a fresh run. Previous ALU acceptance checks and Fmax estimates do not validate this CPU. Website registration remains postponed and has not been completed.
+**Submission status:** the processor replaces the previous ALU submission candidate. Processor RTL tests, Chisel consistency and datasheet generation pass. The first CPU physical run failed during diode insertion because the 4x2 floorplan was too crowded; a 6x2 physical run is required to validate the revised footprint. Check the linked Actions results for the current status. Previous ALU acceptance checks and Fmax estimates do not validate this CPU. Website registration remains postponed and has not been completed.
 
 ## Build and test
 

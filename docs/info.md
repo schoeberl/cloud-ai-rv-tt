@@ -10,7 +10,7 @@ The processor implements the full base integer instruction set: LUI/AUIPC; JAL/J
 
 Taken branches and jumps discard younger instructions and pending wrong-path fetch responses. Loads and stores are aligned and little-endian, with byte write enables. Data waits block younger execution. ECALL, EBREAK, illegal instructions, misalignment and external memory errors cause a precise halt, with no writeback or memory request for a faulting illegal/misaligned instruction. A host monitor reads the cause, faulting PC and trap value, then resets/restarts the core if desired. Privileged CSRs, interrupts and M/A/C/F/D extensions are not included.
 
-The CPU has separate instruction and data interfaces internally. To fit Tiny Tapeout's pins, a bridge presents one host-served memory transaction at a time, prioritizing data over instruction fetch. All program and data storage is external. The 10 MHz operating target does not imply one instruction per cycle over this byte interface; host response bandwidth determines execution speed. The declared footprint is 4x2 tiles, subject to the new CPU's physical checks.
+The CPU has separate instruction and data interfaces internally. To fit Tiny Tapeout's pins, a bridge presents one host-served memory transaction at a time, prioritizing data over instruction fetch. All program and data storage is external. The 10 MHz operating target does not imply one instruction per cycle over this byte interface; host response bandwidth determines execution speed. The declared footprint is 6x2 tiles, subject to the new CPU's physical checks.
 
 ### Pin interface
 
